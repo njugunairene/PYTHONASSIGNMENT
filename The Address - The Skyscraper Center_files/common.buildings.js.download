@@ -1,0 +1,116 @@
+$(document).ready(function() {
+	/* Force only two modules on each row */
+	$('.brick:odd').after("<div style='height: 1px; clear: both'>&nbsp;</div>");
+
+	/* Modals */
+	$('.inline').colorbox({
+		inline: true, 
+		transition: 'elastic',
+		returnFocus: false,
+		width: '670px',
+		maxHeight: '80%',
+		opacity: .3
+	});
+
+	/* Building image gallery */
+	var colorBoxSettings = {
+		transition: 'elastic',
+		returnFocus: false,
+		maxWidth: '800px',
+		maxHeight: '90%',
+		opacity: .3,
+		current: "<small>{current} of {total}</small>"
+	}
+
+	colorBoxSettings.rel = 'building-image';
+	$('.building-image').colorbox(colorBoxSettings);
+
+	if ($('.building-thumbnail').length > 5) {
+		$("#building-thumbnails-container").nanoScroller({
+			alwaysVisible: true,
+			preventPageScrolling: true
+		});
+	}
+
+	/* Map */
+	colorBoxSettings = {
+		transition: 'elastic',
+		returnFocus: false,
+		opacity: .3,
+		current: '',
+		innerWidth: '800px',
+		innerHeight: '600px',
+		initialWidth: '800px',
+		initialHeight: '600px',
+		iframe: true,
+		rel: 'nofollow'
+	}
+	
+	$('#map-trigger').colorbox(colorBoxSettings);
+
+	/* Definitions */
+	colorBoxSettings = {
+		transition: 'elastic',
+		returnFocus: false,
+		opacity: .3,
+		current: '',
+		innerWidth: '700px',
+		innerHeight: '200px',
+		initialWidth: '700px',
+		initialHeight: '200px',
+		iframe: true,
+		rel: 'nofollow'
+	}
+
+	$('.definition-trigger').colorbox(colorBoxSettings);
+
+	/* News */
+	colorBoxSettings = {
+		transition: 'elastic',
+		returnFocus: false,
+		width: '670px',
+		height: '80%',
+		opacity: .3,
+		data: 'fromColorbox',
+		onComplete: hideLinks,
+		current: ''
+	}
+
+	colorBoxSettings.rel = 'articleLink';
+	$('.articleLink').colorbox(colorBoxSettings);
+
+	/* Specific to news links in lightbox */
+	colorBoxSettings.current = "<a href='#' class='gn-index'>Back to Article List</a>";
+	colorBoxSettings.onComplete = initializeBackLink;
+
+	colorBoxSettings.rel = 'articleLinkFromLightbox';
+	$('.articleLinkFromLightbox').colorbox(colorBoxSettings);
+	
+	colorBoxSettings.rel = 'imageLinkFromLightbox';
+	$('.imageLinkFromLightbox').colorbox(colorBoxSettings);
+
+	/* handle tabs */
+	$('#initiative-tabs a:first').tab('show');
+	$('#Video-tabs a:first').tab('show');
+	$('#Research-tabs a:first').tab('show');
+
+	/* hide building image titles */
+	$(".building-image").on('mouseover', function() {
+		var title = $(this).attr("title");
+
+		$(this).attr("tmp_title", title);
+		$(this).attr("title","");
+	});
+
+	$(".building-image").on('mouseout', function() {
+		var title = $(this).attr("tmp_title");
+
+		$(this).attr("title", title);
+	});
+
+	$(".building-image").on('click', function() {
+		var title = $(this).attr("tmp_title");
+
+		$(this).attr("title", title);
+	});
+});

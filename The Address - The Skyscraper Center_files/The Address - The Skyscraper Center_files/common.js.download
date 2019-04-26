@@ -1,0 +1,132 @@
+/* Array holding all image URLs for buildings */
+var buildingImages = [];
+var buildingImagesChecked = [];
+
+/* Get building images for popovers */
+function getBuildingImages(buildingIDs, placement) {
+	if (typeof placement === 'undefined') {
+		placement = 'right';
+	}
+	
+	if(buildingIDs.length > 0) {
+		$.each(buildingIDs, function(index, bID) {
+			buildingImagesChecked.push(bID);
+		});
+
+		buildingIDsString = buildingIDs.join();
+
+		$.getJSON('/api/building-images/', { buildingIDs: buildingIDsString }, function(data) {
+			$.each(data, function(key, buildingData) {
+				buildingImages[buildingData.id] = buildingData.image;
+			});
+
+			// Bind popovers
+			$(".building-hover").popover({
+			    trigger : 'hover',  
+			    placement : placement,
+			    html: 'true',
+			    container: 'body',
+			    content: function() {
+			    	var bid = $(this).attr('bid');
+
+			    	if(typeof buildingImages[bid] !== 'undefined' && buildingImages[bid] !== '') {
+			    		return "<img class='building-hover-img' src='" + buildingImages[bid] + "' />";
+			    	}
+			    }
+			});
+		});
+	}
+}
+
+function getLinkForBuilding(dataToFilter, buildingID) {
+	var filteredData = jQuery.grep(dataToFilter, function(element, index) {
+		if(element.id === buildingID) {
+			return true;
+		}
+
+		return false;
+	});
+
+	if(filteredData.length > 0) {
+		return filteredData[0].url;
+	}
+	
+	return false;
+}
+
+/* Scroll to target smoothly */
+$(document).ready(function() {
+	$('.smoothScroll').bind('click', function(e) {
+		e.preventDefault();
+		$('html, body').animate({ scrollTop: $(this.hash).offset().top - 50 }, 300);
+	});
+
+	/* Display popovers for analysis output types */
+	$('.lbl-popover').popover({
+		trigger: 'hover',
+		placement: 'top',
+		animation: false,
+		html: true,
+		container: 'body',
+		delay: { show: 400, hide: 100 }
+	});
+
+	/* Tooltips */
+	$('.tooltip-trigger').tooltip();
+
+	/* Resize Colorbox when tab changes */
+	$('a[data-toggle="tab"]').on('shown', function (e) {
+		$('.inline').colorbox.resize();
+	});
+});
+
+/* GN */
+
+/* Popup -- used by share buttons on article page */
+function showPopupWindow(url) {
+	newwindow = window.open(url,'name','height=500,width=500');
+	if (window.focus) { newwindow.focus() }
+	return false;
+}
+
+var articlesHidden = true;
+
+function hideLinks() {
+	jQuery('#relatedArticles li:gt(4)').hide();
+	
+	articlesHidden = true;
+	
+	jQuery('#toggle_articles').click(function(e) {
+		e.preventDefault();
+
+		if(articlesHidden) {
+			jQuery('#relatedArticles li:gt(4)').show();
+			jQuery('#toggle_articles').html("Hide");
+
+			articlesHidden = false;
+		}
+		else {
+			jQuery('#relatedArticles li:gt(4)').hide();	
+			jQuery('#toggle_articles').html("See More <img src='http://www.ctbuh.org/images/arrow_right.gif' width='16' height='16' border='0' alt='See More' />");
+
+			articlesHidden = true;
+		}
+	});
+}
+
+function initializeBackLink() {
+	$('.gn-index').on('click', function(e) {
+		e.preventDefault();
+		$('#newsLink').trigger('click');
+	});
+
+	hideLinks();
+}
+
+/* bindWithDelay */
+
+(function(e){e.fn.bindWithDelay=function(t,n,r,i,s){if(e.isFunction(n)){s=i;i=r;r=n;n=undefined}r.guid=r.guid||e.guid&&e.guid++;return this.each(function(){function u(){var t=e.extend(true,{},arguments[0]);var n=this;var u=function(){o=null;r.apply(n,[t])};if(!s){clearTimeout(o);o=null}if(!o){o=setTimeout(u,i)}}var o=null;u.guid=r.guid;e(this).bind(t,n,u)})}})(jQuery)
+
+function replaceAll(str, find, replace) {
+	return str.replace(new RegExp(find, 'g'), replace);
+}

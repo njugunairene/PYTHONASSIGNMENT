@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<!-- saved from url=(0056)http://www.skyscrapercenter.com/building/the-address/468 -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>
+                    The Address -
+        
+        The Skyscraper Center    </title>
+
+    <link rel="shortcut icon" type="image/x-icon" href="http://www.skyscrapercenter.com/favicon.ico">
+
+    <link href="./The Address - The Skyscraper Center_files/bootstrap.min.css" rel="stylesheet">
+    <link href="./The Address - The Skyscraper Center_files/leaflet.css" rel="stylesheet">
+    <link href="./The Address - The Skyscraper Center_files/ammap.css" rel="stylesheet">
+    <link href="./The Address - The Skyscraper Center_files/jquery.dataTables.css" rel="stylesheet">
+    <link href="./The Address - The Skyscraper Center_files/jquery.qtip.min.css" rel="stylesheet">
+    <link href="./The Address - The Skyscraper Center_files/trip.min.css" rel="stylesheet">
+
+    <link href="./The Address - The Skyscraper Center_files/style.css" rel="stylesheet">
+
+    <script type="text/javascript" async="" defer="" src="./The Address - The Skyscraper Center_files/piwik.js.download"></script><script src="./The Address - The Skyscraper Center_files/jquery-1.9.1.js.download"></script>
+
+    <script src="./The Address - The Skyscraper Center_files/algoliasearch.min.js.download"></script>
+    <script src="./The Address - The Skyscraper Center_files/algoliasearch.helper.min.js.download"></script>
+
+    <script src="./The Address - The Skyscraper Center_files/hogan.min.js.download"></script>
+</head>
+
+<body>
+
+<div id="header">
+    <div class="container">
+        <div id="header-top" class="row">
+            <div class="span6 pull-left">
+                <a href="http://www.skyscrapercenter.com/">
+                    <img src="./The Address - The Skyscraper Center_files/Skyscraper_Center_Logo.png" alt="The Skyscraper Center" width="400" height="59" border="0">
+                </a>
+            </div>
+
+                            <div id="header-search" class="span6 pull-right text-right">
+    <form class="form-inline custom-search-form" action="http://www.skyscrapercenter.com/search" method="get">
+
+    <span class="twitter-typeahead" style="position: relative; display: inline-block; direction: ltr;"><input type="text" class="input-xlarge typeahead tt-input" name="q" id="search-input" autocomplete="off" spellcheck="false" placeholder="Search Buildings, Companies, Cities &amp; Countries" style="padding: 6px !important; width: 330px !important; position: relative; vertical-align: top;" dir="auto"><pre aria-hidden="true" style="position: absolute; visibility: hidden; white-space: pre; font-family: Arial, sans-serif; font-size: 12px; font-style: normal; font-variant: normal; font-weight: 400; word-spacing: 0px; letter-spacing: 0px; text-indent: 0px; text-rendering: auto; text-transform: none;"></pre><span class="tt-dropdown-menu" style="position: absolute; top: 100%; left: 0px; z-index: 100; display: none; right: auto;"><div class="tt-dataset-0"></div><div class="tt-dataset-1"></div><div class="tt-dataset-2"></div><div class="tt-dataset-3"></div><div class="tt-dataset-4"></div><div class="all-results"><a id="view-all-link" href="http://www.skyscrapercenter.com/search">View all results</a></div><div class="powered-by-algoliasearch"><small><em>Powered by</em></small><a href="http://www.algolia.com/?utm_source=skyscrapercenter&amp;utm_medium=link&amp;utm_campaign=skyscrapercenter_search" title="Algolia Realtime Search" target="_blank"><img src="./The Address - The Skyscraper Center_files/algolia.png" alt="Algolia Realtime Search" width="48" height="15"></a></div></span></span>
+
+    </form>
+
+    <script type="text/javascript">
+    $(document).ready(function() {
+        var algolia = algoliasearch('VQAAT9TYC4', 'eec96cb29df3072743c09f1cbb793281');
+        var algoliaCompanies = algolia.initIndex('SC_Companies');
+        var algoliaBuildings = algolia.initIndex('SC_Buildings');
+        var algoliaComplexes = algolia.initIndex('SC_Complexes');
+		
+		
+		var algoliaCities = algolia.initIndex('v2_cities');
+		var algoliaCountries = algolia.initIndex('v2_countries');
+
+        var templateCompany = Hogan.compile('<div class="company"><a href="/company/{{ id }}"><span style="display: block">{{{ _highlightResult.name.value }}}</span></a></div>');
+        var templateBuilding = Hogan.compile('<div class="building"><a href="{{ url }}"><span style="display: block">{{{ nameToUse }}}{{{ cityToUse }}}</span></a></div>');
+        var templateComplex = Hogan.compile('<div class="complex"><a href="{{ url }}"><span style="display: block">{{{ nameToUse }}}{{{ cityToUse }}}</span></a></div>');
+
+		var templateCity = Hogan.compile('<div class="city"><a href="/city/{{ url_name }}"><span style="display: block">{{ name }}</span></a></div>');
+		var templateCountry = Hogan.compile('<div class="country"><a href="/country/{{ url_name }}"><span style="display: block">{{ name }}</span></a></div>');
+		
+        var typeaheadCtrl = $('#search-input').typeahead({
+            minLength: 3,
+            hint: false,
+            highlight: false
+        }, [
+        {
+            source: algoliaBuildings.ttAdapter({ hitsPerPage: 4, replaceSynonymsInHighlight: false, typoTolerance: 'strict' }),
+            displayKey: 'name',
+            templates: {
+                header: "<div class='category'>Buildings</div>",
+                suggestion: function(hit) {
+                    var cityToUse = '';
+                    var nameToUse = hit._highlightResult.name.value;
+
+                    if (hit.city != '') {
+                      cityToUse = ' <small>(' + hit.city + ')</small>';
+                    }
+
+                    hit.cityToUse = cityToUse;
+                    hit.nameToUse = nameToUse;
+
+                    return templateBuilding.render(hit);
+                }
+            }
+        },
+        {
+            source: algoliaComplexes.ttAdapter({ hitsPerPage: 3, replaceSynonymsInHighlight: false, typoTolerance: 'strict' }),
+            displayKey: 'name',
+            templates: {
+                header: "<div class='category'>Building Complexes</div>",
+                suggestion: function(hit) {
+                    var cityToUse = '';
+                    var nameToUse = hit._highlightResult.name.value;
+
+                    if (hit.city != '') {
+                      cityToUse = ' <small>(' + hit.city + ')</small>';
+                    }
+
+                    hit.cityToUse = cityToUse;
+                    hit.nameToUse = nameToUse;
+
+                    return templateComplex.render(hit);
+                }
+            }
+        },
+        {
+            source: algoliaCompanies.ttAdapter({ hitsPerPage: 3, replaceSynonymsInHighlight: false, typoTolerance: 'strict' }),
+            displayKey: 'name',
+            templates: {
+                header: "<div class='category'>Companies</div>",
+                suggestion: function(hit) { 
+					hit.url = '/company/' + hit.id;
+				return templateCompany.render(hit); 
+				
+				},
+            }
+        },
+		// add CITY + COUNTRY
+		{
+			source:  algoliaCities.ttAdapter({ hitsPerPage: 3, replaceSynonymsInHighlight: false, typoTolerance: 'strict' }),
+            displayKey: 'name',
+            templates: {
+                header: "<div class='category'>Cities</div>",
+                suggestion: function(hit) {
+					if(hit.slug){
+						hit.url_name = hit.slug;
+					} else {
+						hit.url_name = hit.name.replace(/ /g, '-').toLowerCase();
+					}
+					
+					return templateCity.render(hit);
+				},
+            }
+		},
+		{
+			source:  algoliaCountries.ttAdapter({ hitsPerPage: 3, replaceSynonymsInHighlight: false, typoTolerance: 'strict' }),
+            displayKey: 'name',
+            templates: {
+                header: "<div class='category'>Countries</div>",
+                suggestion: function(hit) {
+					hit.url_name = hit.name.replace(/ /g, '-').toLowerCase();
+					return templateCountry.render(hit);
+				},
+            }
+		}
+			// this is the end
+        ]);
+
+        typeaheadCtrl.on('typeahead:selected', function(evt, data) {
+			if (false && typeof data.url === "undefined"){
+				alert(JSON.stringify(data));
+			} else {
+				window.location = 'http://' + window.location.host + data.url;
+			}
+        });
+
+        // Append view all link
+        $('.tt-dropdown-menu').append('<div class="all-results"><a id="view-all-link" href="/search">View all results</a>');
+
+        $('#view-all-link').on('click', function(e) {
+            e.preventDefault();
+            window.location = 'http://' + window.location.host + '/search#q=' + $('#search-input').val();
+        });
+
+        // Append Algolia credit
+        $('.tt-dropdown-menu').append('<div class="powered-by-algoliasearch"><small><em>Powered by</em></small><a href="http://www.algolia.com/?utm_source=skyscrapercenter&amp;utm_medium=link&amp;utm_campaign=skyscrapercenter_search" title="Algolia Realtime Search" target="_blank"><img src="/img/algolia.png" alt="Algolia Realtime Search" width="48" height="15"></a></div>');
+    });
+    </script>
+</div>                    </div>
+
+        <div class="row">
+            <div id="header-nav" class="span10 pull-left">
+                <ul id="menu" class="nav nav-pills">
+                    <li><a href="http://www.skyscrapercenter.com/countries">Countries</a></li>
+                    <li><a href="http://www.skyscrapercenter.com/cities">Cities</a></li>
+                    <li class="active"><a href="http://www.skyscrapercenter.com/buildings">Buildings</a></li>
+                    <li><a href="http://www.skyscrapercenter.com/companies">Companies</a></li>
+                    <li><a href="http://www.skyscrapercenter.com/quick-lists">Create Lists/Graphics</a></li>
+                    <li><a href="http://www.skyscrapercenter.com/compare-data">Compare Data</a></li>
+                    <li><a href="http://www.skyscrapercenter.com/search">Search</a></li>
+
+                                            <li><a href="http://www.skyscrapercenter.com/submit">Submit Data</a></li>
+                    
+                    <li>
+                                                    <a href="http://www.skyscrapercenter.com/locale/cn"><img src="./The Address - The Skyscraper Center_files/CN.png" width="16" height="16" border="0" style="vertical-align: top" alt="Chinese/中文"> Chinese/中文</a>
+                                            </li>
+                </ul>
+            </div>
+
+            <div class="span2 pull-right text-right">
+                <a href="http://www.ctbuh.org/" target="_blank"><img src="./The Address - The Skyscraper Center_files/CTBUH_Logo.png" alt="The Council on Tall Buildings and Urban Habitat" width="175" height="47" border="0" style="margin-top: 5px"></a>
+            </div>
+        </div>
+    </div> <!-- /container -->
+</div>
+
+<div class="container">
+
+
+
+<div class="row section-container">
+    <div class="span12">
+        <h3>
+        	The Address
+
+        	        		<small><a class="btn btn-mini btn-in-heading" href="http://www.skyscrapercenter.com/pdf/building/468" target="_blank">Download PDF</a></small>
+        	        </h3>
+
+            </div>
+</div>
+
+
+<!--
+common.buildingAndComplexImages
+-->
+
+<div class="row section-container">
+			<div class="span4">
+		
+		<a class="building-image cboxElement" href="http://images.skyscrapercenter.com/building/theaddress_ext-overallfar_(c)imresolt.jpg" title="&lt;small&gt;© Imre Solt • &lt;a href=&#39;http://images.skyscrapercenter.com/building/theaddress_ext-overallfar_(c)imresolt.jpg&#39; target=&#39;_blank&#39;&gt;Download&lt;/a&gt;&lt;/small&gt;">
+		<img class="img-rounded" src="./The Address - The Skyscraper Center_files/3609_300x415_3389.jpg" width="300" height="415" border="0" alt="">
+		</a>
+		
+		<br>
+
+		<span class="muted"><small>Click an image to view larger version.</small></span>
+	</div>
+
+	<div class="span2">
+		<div class="nano has-scrollbar" id="building-thumbnails-container">
+							<div class="nano-content" id="building-thumbnails" tabindex="0" style="margin-right: -17px;">
+
+					
+											
+																								
+							<a class="building-image cboxElement" href="http://images.skyscrapercenter.com/building/the-address_mark-ch-thompson1.jpg" title="&lt;small&gt;© Mark CH Thompson &lt;/small&gt;">
+
+							<img class="img-rounded img-spaced building-thumbnail" src="./The Address - The Skyscraper Center_files/72616_80x80_8046.jpg" border="0" alt="">
+
+							</a>
+						
+																								
+							<a class="building-image cboxElement" href="http://images.skyscrapercenter.com/building/address_view1_atkins.jpg" title="&lt;small&gt;© Atkins • &lt;a href=&#39;http://images.skyscrapercenter.com/building/address_view1_atkins.jpg&#39;&gt;Download&lt;/a&gt;&lt;/small&gt;">
+
+							<img class="img-rounded img-spaced building-thumbnail" src="./The Address - The Skyscraper Center_files/3727_80x80_3581.jpg" border="0" alt="">
+
+							</a>
+						
+																								
+							<a class="building-image cboxElement" href="http://images.skyscrapercenter.com/building/address_lookingup_atkins.jpg" title="&lt;small&gt;© Atkins • &lt;a href=&#39;http://images.skyscrapercenter.com/building/address_lookingup_atkins.jpg&#39;&gt;Download&lt;/a&gt;&lt;/small&gt;">
+
+							<img class="img-rounded img-spaced building-thumbnail" src="./The Address - The Skyscraper Center_files/40590_80x80_8211.jpg" border="0" alt="">
+
+							</a>
+						
+																								
+							<a class="building-image cboxElement" href="http://images.skyscrapercenter.com/building/theaddress_ext-overall_(c)imresolt.jpg" title="&lt;small&gt;© Imre Solt • &lt;a href=&#39;http://images.skyscrapercenter.com/building/theaddress_ext-overall_(c)imresolt.jpg&#39;&gt;Download&lt;/a&gt;&lt;/small&gt;">
+
+							<img class="img-rounded img-spaced building-thumbnail" src="./The Address - The Skyscraper Center_files/43666_80x80_9494_139.jpg" border="0" alt="">
+
+							</a>
+						
+																								
+							<a class="building-image cboxElement" href="http://images.skyscrapercenter.com/building/theaddress_ext-context_(c)imresolt.jpg" title="&lt;small&gt;© Imre Solt • &lt;a href=&#39;http://images.skyscrapercenter.com/building/theaddress_ext-context_(c)imresolt.jpg&#39;&gt;Download&lt;/a&gt;&lt;/small&gt;">
+
+							<img class="img-rounded img-spaced building-thumbnail" src="./The Address - The Skyscraper Center_files/43668_80x80_5344.jpg" border="0" alt="">
+
+							</a>
+						
+																								
+							<a class="building-image cboxElement" href="http://images.skyscrapercenter.com/building/the-address_terri-meyer-boake1.jpg" title="&lt;small&gt;© Terri Meyer Boake • &lt;a href=&#39;http://images.skyscrapercenter.com/building/the-address_terri-meyer-boake1.jpg&#39;&gt;Download&lt;/a&gt;&lt;/small&gt;">
+
+							<img class="img-rounded img-spaced building-thumbnail" src="./The Address - The Skyscraper Center_files/61680_80x80_2705.jpg" border="0" alt="">
+
+							</a>
+						
+																								
+							<a class="building-image cboxElement" href="http://images.skyscrapercenter.com/building/the-address_terri-meyer-boake2.jpg" title="&lt;small&gt;© Terri Meyer Boake • &lt;a href=&#39;http://images.skyscrapercenter.com/building/the-address_terri-meyer-boake2.jpg&#39;&gt;Download&lt;/a&gt;&lt;/small&gt;">
+
+							<img class="img-rounded img-spaced building-thumbnail" src="./The Address - The Skyscraper Center_files/33849_80x80_6896.jpg" border="0" alt="">
+
+							</a>
+						
+																								
+							<a class="building-image cboxElement" href="http://images.skyscrapercenter.com/building/addressuc_mg.jpg" title="&lt;small&gt;© Marshall Gerometta/CTBUH • &lt;a href=&#39;http://images.skyscrapercenter.com/building/addressuc_mg.jpg&#39;&gt;Download&lt;/a&gt;&lt;/small&gt;">
+
+							<img class="img-rounded img-spaced building-thumbnail" src="./The Address - The Skyscraper Center_files/5118_80x80_8707.jpg" border="0" alt="">
+
+							</a>
+						
+																								
+							<a class="building-image cboxElement" href="http://images.skyscrapercenter.com/building/address_bynight_atkins.jpg" title="&lt;small&gt;© Atkins • &lt;a href=&#39;http://images.skyscrapercenter.com/building/address_bynight_atkins.jpg&#39;&gt;Download&lt;/a&gt;&lt;/small&gt;">
+
+							<img class="img-rounded img-spaced building-thumbnail" src="./The Address - The Skyscraper Center_files/21092_80x80_6903.jpg" border="0" alt="">
+
+							</a>
+						
+																								
+							<a class="building-image cboxElement" href="http://images.skyscrapercenter.com/building/theaddress_ext-night-context_(c)imresolt.jpg" title="&lt;small&gt;© Imre Solt • &lt;a href=&#39;http://images.skyscrapercenter.com/building/theaddress_ext-night-context_(c)imresolt.jpg&#39;&gt;Download&lt;/a&gt;&lt;/small&gt;">
+
+							<img class="img-rounded img-spaced building-thumbnail" src="./The Address - The Skyscraper Center_files/3047_80x80_1941.jpg" border="0" alt="">
+
+							</a>
+						
+																								
+							<a class="building-image cboxElement" href="http://images.skyscrapercenter.com/building/theaddress_ext-near_(c)imresolt.jpg" title="&lt;small&gt;© Imre Solt • &lt;a href=&#39;http://images.skyscrapercenter.com/building/theaddress_ext-near_(c)imresolt.jpg&#39;&gt;Download&lt;/a&gt;&lt;/small&gt;">
+
+							<img class="img-rounded img-spaced building-thumbnail" src="./The Address - The Skyscraper Center_files/43667_80x80_2426.jpg" border="0" alt="">
+
+							</a>
+						
+																								
+							<a class="building-image cboxElement" href="http://images.skyscrapercenter.com/building/theaddress_ext-pool_(c)imresolt.jpg" title="&lt;small&gt;© Imre Solt • &lt;a href=&#39;http://images.skyscrapercenter.com/building/theaddress_ext-pool_(c)imresolt.jpg&#39;&gt;Download&lt;/a&gt;&lt;/small&gt;">
+
+							<img class="img-rounded img-spaced building-thumbnail" src="./The Address - The Skyscraper Center_files/29147_80x80_9421.jpg" border="0" alt="">
+
+							</a>
+						
+																								
+							<a class="building-image cboxElement" href="http://images.skyscrapercenter.com/building/TheAddress_ext-entry_(c)ImreSolt.jpg" title="&lt;small&gt;© Imre Solt • &lt;a href=&#39;http://images.skyscrapercenter.com/building/TheAddress_ext-entry_(c)ImreSolt.jpg&#39;&gt;Download&lt;/a&gt;&lt;/small&gt;">
+
+							<img class="img-rounded img-spaced building-thumbnail" src="./The Address - The Skyscraper Center_files/1513_80x80_2294.jpg" border="0" alt="">
+
+							</a>
+						
+																								
+							<a class="building-image cboxElement" href="http://images.skyscrapercenter.com/building/theaddress_int-balcony_(c)imresolt.jpg" title="&lt;small&gt;© Imre Solt • &lt;a href=&#39;http://images.skyscrapercenter.com/building/theaddress_int-balcony_(c)imresolt.jpg&#39;&gt;Download&lt;/a&gt;&lt;/small&gt;">
+
+							<img class="img-rounded img-spaced building-thumbnail" src="./The Address - The Skyscraper Center_files/30782_80x80_1389.jpg" border="0" alt="">
+
+							</a>
+						
+																								
+							<a class="building-image cboxElement" href="http://images.skyscrapercenter.com/building/theaddress_int-entry_(c)imresolt.jpg" title="&lt;small&gt;© Imre Solt • &lt;a href=&#39;http://images.skyscrapercenter.com/building/theaddress_int-entry_(c)imresolt.jpg&#39;&gt;Download&lt;/a&gt;&lt;/small&gt;">
+
+							<img class="img-rounded img-spaced building-thumbnail" src="./The Address - The Skyscraper Center_files/43665_80x80_7863.jpg" border="0" alt="">
+
+							</a>
+						
+																								
+							<a class="building-image cboxElement" href="http://images.skyscrapercenter.com/building/theaddress_int-lobby_(c)imresolt.jpg" title="&lt;small&gt;© Imre Solt • &lt;a href=&#39;http://images.skyscrapercenter.com/building/theaddress_int-lobby_(c)imresolt.jpg&#39;&gt;Download&lt;/a&gt;&lt;/small&gt;">
+
+							<img class="img-rounded img-spaced building-thumbnail" src="./The Address - The Skyscraper Center_files/10381_80x80_6083_7391.jpg" border="0" alt="">
+
+							</a>
+						
+																								
+							<a class="building-image cboxElement" href="http://images.skyscrapercenter.com/building/daniel-safarik_2579.jpg" title="&lt;small&gt;© Daniel Safarik • &lt;a href=&#39;http://images.skyscrapercenter.com/building/daniel-safarik_2579.jpg&#39;&gt;Download&lt;/a&gt;&lt;/small&gt;">
+
+							<img style="margin-bottom: 1em" class="img-rounded img-spaced building-thumbnail" src="./The Address - The Skyscraper Center_files/75573_80x80.jpg" border="0" alt="">
+
+							</a>
+						
+															</div>
+
+				<div class="fadeout"></div>
+					<div class="nano-pane" style="opacity: 1; visibility: visible;"><div class="nano-slider" style="height: 133px; transform: translate(0px, 0px);"></div></div></div>
+	</div>
+	
+	<div class="span6" id="figures-section">
+					<span class="figures-container" style="top: 101px">
+			<span id="height-occupied-left" style="padding-top: 0px">
+				<a class="definition-trigger cboxElement" href="http://www.skyscrapercenter.com/definition/height-occupied">Height: Occupied</a><br>
+				<span class="muted">
+					228.3 m / 749 ft
+
+									</span>
+			</span>
+
+			<span id="height-occupied-right">
+				&nbsp;
+			</span>
+		</span>
+	
+			<span class="figures-container" id="height-architecture-container" style="top: 0px">
+			<span id="height-architecture-left">
+									<a class="definition-trigger cboxElement" href="http://www.skyscrapercenter.com/definition/height-tip">Height: To Tip</a><br>
+					<span class="muted" style="display: inline-block; margin-bottom: 2px">
+						302.2 m / 991 ft
+
+											</span><br>
+				
+				<a class="definition-trigger cboxElement" href="http://www.skyscrapercenter.com/definition/height-architectural">Height: Architectural</a><br>
+				<span class="muted">
+					302.2 m / 991 ft
+
+									</span>
+			</span>
+
+			 <span id="height-architecture-right">
+			 	&nbsp;
+			 </span>
+		</span>
+	
+	<div class="figures-container" id="building-image-container">
+		<img src="./The Address - The Skyscraper Center_files/TheAddress.png" alt="The Address Outline">
+	</div>
+
+	 
+<span id="table-figures-container" class="figures-container-right">
+	<table id="table-figures">
+		
+		
+		
+					<tbody><tr><td><a class="definition-trigger cboxElement" href="http://www.skyscrapercenter.com/definition/floors-above">Floors Above Ground</a><br><span class="muted">63</span></td></tr>
+		
+					<tr><td><a class="definition-trigger cboxElement" href="http://www.skyscrapercenter.com/definition/floors-below">Floors Below Ground</a><br><span class="muted">4</span></td></tr>
+		
+		
+		
+					<tr><td><a class="definition-trigger cboxElement" href="http://www.skyscrapercenter.com/definition/tower-gfa">Tower GFA</a><br><span class="muted">178,000 m² / 1,915,976 ft²</span></td></tr>
+		
+		
+					<tr><td><a class="definition-trigger cboxElement" href="http://www.skyscrapercenter.com/definition/apartments"># of Apartments</a><br><span class="muted">626</span></td></tr>
+		
+					<tr><td><a class="definition-trigger cboxElement" href="http://www.skyscrapercenter.com/definition/hotel-rooms"># of Hotel Rooms</a><br><span class="muted">196</span></td></tr>
+		
+					<tr><td><a class="definition-trigger cboxElement" href="http://www.skyscrapercenter.com/definition/parking"># of Parking Spaces</a><br><span class="muted">895</span></td></tr>
+			</tbody></table>
+</span>			</div>
+</div>
+
+<!-- start sections -->
+<div class="row section-container">
+
+<div class="span6 brick">
+	<h4>Facts</h4>
+
+	<table class="table table-condensed table-building-data">
+		<tbody>
+			<tr>
+		<td width="150"><a class="definition-trigger cboxElement" href="http://www.skyscrapercenter.com/definition/official-name">Official Name</a></td>
+		<td>The Address</td>
+	</tr>
+
+	
+			<tr>
+			<td><a class="definition-trigger cboxElement" href="http://www.skyscrapercenter.com/definition/other-names">Other Names</a></td>
+			<td>The Address Downtown Dubai, The Address Downtown Burj Dubai, Burj Dubai Lake Hotel &amp; Serviced Apartments</td>
+		</tr>
+	
+	<tr>
+		<td><a class="definition-trigger cboxElement" href="http://www.skyscrapercenter.com/definition/structure-type">Structure Type</a></td>
+		<td>Building</td>
+	</tr>
+
+	<tr>
+		<td><a class="definition-trigger cboxElement" href="http://www.skyscrapercenter.com/definition/status">Status</a></td>
+		<td>Completed</td>
+	</tr>
+
+			<tr>
+			<td><a class="definition-trigger cboxElement" href="http://www.skyscrapercenter.com/definition/country">Country</a></td>
+			<td><a href="http://www.skyscrapercenter.com/country/united-arab-emirates">United Arab Emirates</a></td>
+		</tr>
+	
+			<tr>
+			<td><a class="definition-trigger cboxElement" href="http://www.skyscrapercenter.com/definition/city">City</a></td>
+			<td><a href="http://www.skyscrapercenter.com/city/dubai">Dubai</a></td>
+		</tr>
+	
+			
+		<tr>
+			<td>
+									Street Address &amp; Map							</td>
+
+			<td>
+									<a id="map-trigger" href="http://www.skyscrapercenter.com/map/building/468" class="cboxElement">The Address Downtown Dubai</a>
+							</td>
+		</tr>
+	
+	
+			<tr>
+			<td>
+				<a class="definition-trigger cboxElement" href="http://www.skyscrapercenter.com/definition/function">
+											Building Function									</a>
+			</td>
+			<td>residential / hotel</td>
+		</tr>
+	
+	
+			<tr>
+			<td><a class="definition-trigger cboxElement" href="http://www.skyscrapercenter.com/definition/material">Structural Material</a></td>
+			<td>concrete			
+						
+			</td>
+		</tr>
+	
+	
+	
+			<tr>
+			<td><a class="definition-trigger cboxElement" href="http://www.skyscrapercenter.com/definition/proposed">Proposed</a></td>
+			<td>2004</td>
+		</tr>
+	
+			<tr>
+			<td><a class="definition-trigger cboxElement" href="http://www.skyscrapercenter.com/definition/construction">Construction Start</a></td>
+			<td>2005</td>
+		</tr>
+	
+			<tr>
+			<td>
+				<a class="definition-trigger cboxElement" href="http://www.skyscrapercenter.com/definition/completion">Completion</a>
+			</td>
+			<td>2008</td>
+		</tr>
+	
+	
+			<tr>
+			<td>
+				<a class="definition-trigger cboxElement" href="http://www.skyscrapercenter.com/definition/retrofit">
+									Retrofit Start								</a>
+			</td>
+			<td>2016</td>
+		</tr>
+	
+			<tr>
+			<td><a class="definition-trigger cboxElement" href="http://www.skyscrapercenter.com/definition/retrofit">Retrofit End</a></td>
+			<td>2018</td>
+		</tr>
+	
+	
+				<tr>
+			<td colspan="2">
+				<h6>
+					Rankings
+					<small>Click arrows to view the next taller/shorter buildings</small>
+				</h6>
+			</td>
+		</tr>
+
+					<tr>
+				<td><a class="definition-trigger cboxElement" href="http://www.skyscrapercenter.com/definition/ranking-global">Global Ranking</a></td>
+
+				<td>
+					#135 Tallest in the <a href="http://www.skyscrapercenter.com/x/40055">World</a>
+					<span class="pull-right">
+													<a class="btn btn-mini faded tooltip-trigger" href="http://www.skyscrapercenter.com/building/kingdom-centre/494" title="" data-original-title="Kingdom Centre"><i class="icon-chevron-up"></i></a>
+						
+													<a class="btn btn-mini faded tooltip-trigger" href="http://www.skyscrapercenter.com/building/gate-to-the-east/499" title="" data-original-title="Gate to the East"><i class="icon-chevron-down"></i></a>
+											</span>
+				</td>
+			</tr>
+		
+					<tr>
+				<td><a class="definition-trigger cboxElement" href="http://www.skyscrapercenter.com/definition/ranking-regional">Regional Ranking</a></td>
+				<td>
+					#30 Tallest in <a href="http://www.skyscrapercenter.com/compare-data/submit?type%5B%5D=building&amp;status%5B%5D=COM&amp;base_region=6&amp;base_country=0&amp;base_city=0&amp;base_height_range=3&amp;base_company=All&amp;base_min_year=0&amp;base_max_year=9999&amp;skip_comparison=on&amp;output%5B%5D=list&amp;dataSubmit=Show+Results">Middle East</a>
+
+					<span class="pull-right">
+													<a class="btn btn-mini faded tooltip-trigger" href="http://www.skyscrapercenter.com/building/kingdom-centre/494" title="" data-original-title="Kingdom Centre"><i class="icon-chevron-up"></i></a>
+						
+													<a class="btn btn-mini faded tooltip-trigger" href="http://www.skyscrapercenter.com/building/arraya-tower/534" title="" data-original-title="Arraya Tower"><i class="icon-chevron-down"></i></a>
+											</span>
+				</td>
+			</tr>
+		
+					<tr>
+				<td><a class="definition-trigger cboxElement" href="http://www.skyscrapercenter.com/definition/ranking-national">National Ranking</a></td>
+				<td>
+					#26 Tallest in <a href="http://www.skyscrapercenter.com/country/united-arab-emirates">United Arab Emirates</a>
+
+					<span class="pull-right">
+													<a class="btn btn-mini faded tooltip-trigger" href="http://www.skyscrapercenter.com/building/etihad-towers-t2/5194" title="" data-original-title="Etihad Towers T2"><i class="icon-chevron-up"></i></a>
+						
+													<a class="btn btn-mini faded tooltip-trigger" href="http://www.skyscrapercenter.com/building/emirates-crown/548" title="" data-original-title="Emirates Crown"><i class="icon-chevron-down"></i></a>
+											</span>
+				</td>
+			</tr>
+		
+					<tr>
+				<td><a class="definition-trigger cboxElement" href="http://www.skyscrapercenter.com/definition/ranking-city">City Ranking</a></td>
+				<td>
+					#22 Tallest in <a href="http://www.skyscrapercenter.com/city/dubai">Dubai</a>
+
+					<span class="pull-right">
+													<a class="btn btn-mini faded tooltip-trigger" href="http://www.skyscrapercenter.com/building/cayan-tower/464" title="" data-original-title="Cayan Tower"><i class="icon-chevron-up"></i></a>
+						
+													<a class="btn btn-mini faded tooltip-trigger" href="http://www.skyscrapercenter.com/building/emirates-crown/548" title="" data-original-title="Emirates Crown"><i class="icon-chevron-down"></i></a>
+											</span>
+				</td>
+			</tr>
+					</tbody>
+	</table>
+</div>
+
+
+	<div class="span6 brick">
+					<h4>Companies Involved</h4>
+		
+		<table class="table table-condensed table-building-data">
+<tbody>
+				
+							<tr>
+				<td width="150">
+					 
+						Developer									</td>
+				<td>
+											
+													
+															<a href="http://www.skyscrapercenter.com/company/455">Emaar Properties</a>							
+																						</td>
+			</tr>
+							
+							<tr>
+				<td colspan="2">
+					 
+						Architect									</td>
+			</tr>
+
+							
+				<tr>
+					<td width="150">
+						<span class="subcategory">• 
+
+													<a class="definition-trigger cboxElement" href="http://www.skyscrapercenter.com/definition/designarch">Design</a>
+						
+						</span>
+					</td>
+					<td>
+						
+													
+															Atkins							
+																		</td>
+				</tr>
+								
+							<tr>
+				<td colspan="2">
+					 
+						Structural Engineer									</td>
+			</tr>
+
+							
+				<tr>
+					<td width="150">
+						<span class="subcategory">• 
+
+													<a class="definition-trigger cboxElement" href="http://www.skyscrapercenter.com/definition/designengi">Design</a>
+						
+						</span>
+					</td>
+					<td>
+						
+													
+															Atkins							
+																		</td>
+				</tr>
+								
+							<tr>
+				<td colspan="2">
+					 
+						MEP Engineer									</td>
+			</tr>
+
+							
+				<tr>
+					<td width="150">
+						<span class="subcategory">• 
+
+													<a class="definition-trigger cboxElement" href="http://www.skyscrapercenter.com/definition/designengi">Design</a>
+						
+						</span>
+					</td>
+					<td>
+						
+													
+															Atkins;							
+																				
+															<a href="http://www.skyscrapercenter.com/company/10761">WME Consultants</a>							
+																		</td>
+				</tr>
+								
+							<tr>
+				<td width="150">
+											<a class="definition-trigger cboxElement" href="http://www.skyscrapercenter.com/definition/manager">Project Manager</a>
+									</td>
+				<td>
+											
+													
+															Atkins;							
+																				
+															<a href="http://www.skyscrapercenter.com/company/4206">AECOM</a>							
+																						</td>
+			</tr>
+							
+							<tr>
+				<td width="150">
+											<a class="definition-trigger cboxElement" href="http://www.skyscrapercenter.com/definition/contractor">Main Contractor</a>
+									</td>
+				<td>
+											
+													
+															Arab Technical Construction;							
+																				
+															Besix;							
+																				
+															Dutco Group							
+																						</td>
+			</tr>
+							
+							<tr>
+				<td colspan="2">
+											<a class="definition-trigger cboxElement" href="http://www.skyscrapercenter.com/definition/consultant">Other Consultant</a>
+									</td>
+			</tr>
+
+							
+				<tr>
+					<td width="150">
+						<span class="subcategory">• 
+
+													Civil						
+						</span>
+					</td>
+					<td>
+						
+													
+															Atkins							
+																		</td>
+				</tr>
+							
+				<tr>
+					<td width="150">
+						<span class="subcategory">• 
+
+													<a class="definition-trigger cboxElement" href="http://www.skyscrapercenter.com/definition/facade">Façade</a>
+						
+						</span>
+					</td>
+					<td>
+						
+													
+															<a href="http://www.skyscrapercenter.com/company/21378">Thomas Bell-Wright International Consultants </a>;							
+																				
+															<a href="http://www.skyscrapercenter.com/company/18265">WSP</a>							
+																		</td>
+				</tr>
+							
+				<tr>
+					<td width="150">
+						<span class="subcategory">• 
+
+													Interiors						
+						</span>
+					</td>
+					<td>
+						
+													
+															Arabtec;							
+																				
+															Meyer Davis							
+																		</td>
+				</tr>
+							
+				<tr>
+					<td width="150">
+						<span class="subcategory">• 
+
+													Security						
+						</span>
+					</td>
+					<td>
+						
+													
+															Weqaya Security Consulting LLC							
+																		</td>
+				</tr>
+								
+							<tr>
+				<td colspan="2">
+											<a class="definition-trigger cboxElement" href="http://www.skyscrapercenter.com/definition/supplier">Material Supplier</a>
+									</td>
+			</tr>
+
+							
+				<tr>
+					<td width="150">
+						<span class="subcategory">• 
+
+													Cladding						
+						</span>
+					</td>
+					<td>
+						
+													
+															Alumco							
+																		</td>
+				</tr>
+							
+				<tr>
+					<td width="150">
+						<span class="subcategory">• 
+
+													Fire Proofing						
+						</span>
+					</td>
+					<td>
+						
+													
+															Grace Construction Products							
+																		</td>
+				</tr>
+						</tbody>
+</table>
+			</div><div style="height: 1px; clear: both">&nbsp;</div>
+
+
+
+	<a id="Resources"></a>
+
+	
+	<div class="span6 brick">
+		<h4>CTBUH Initiatives</h4>
+
+									<p>
+	
+	<b>Dubai High-Rise Renovation Complete</b>
+
+	
+	<br>
+
+	
+	<span class="muted">
+
+			4 Jun 2018	
+	–
+
+	CTBUH News 
+
+		</span>
+</p>
+																<p>
+	
+	<b>CTBUH Releases Initial Statement on Grenfell House Fire in London</b>
+
+	
+	<br>
+
+	
+	<span class="muted">
+
+			14 Jun 2017	
+	–
+
+	CTBUH-Related News 
+
+	 
+		Report		</span>
+</p>
+																<p>
+	
+	<b>Warm Weather Spaces Walking Tours 2015</b>
+
+	
+	<br>
+
+	
+	<span class="muted">
+
+			17 Sep 2015	
+	–
+
+	Tour 
+
+	 
+		Report		</span>
+</p>
+														
+					<p>
+									<a class="inline cboxElement" href="http://www.skyscrapercenter.com/building/the-address/468#initiatives">
+				
+				More Initiatives</a> <i class="icon-arrow-right"></i>
+			</p>
+
+							<div class="inline_content">
+					<div id="initiatives">
+						<h4>CTBUH Initiatives Related to The Address</h4>
+
+						<div id="initiative-tabs" class="tabbable">
+	
+	<ul class="nav nav-tabs  hidden ">
+		
+									<li class="active"><a href="http://www.skyscrapercenter.com/building/the-address/468#initiatives-2018" data-toggle="tab">2018 &amp; Older</a></li>
+			
+								
+								
+								
+						</ul>
+
+	<div class="tab-content">
+		
+									
+				<div class="tab-pane active" id="initiatives-2018">
+			
+							<div class="row inner-section">
+		<div class="span1">
+			
+			<img class="img-rounded" src="./The Address - The Skyscraper Center_files/1512-Rotator-TheAddressRenovation_254.jpg" border="0">
+
+					</div>
+
+		<div class="span7">
+			
+			<b>
+							Dubai High-Rise Renovation Complete						</b>
+
+						<br>
+
+			<span class="muted">
+			<small>
+			
+							4 Jun 2018, Dubai			
+			–
+
+			CTBUH News
+			
+						</small>
+			</span>
+
+			<br>
+
+			
+			The Address Downtown has reopened its doors, completing renovations two years after a fire struck the building on New Year’s Day, 2016.		</div>
+	</div>
+ 			
+			
+								
+							<div class="row inner-section">
+		<div class="span1">
+			
+			<img class="img-rounded" src="./The Address - The Skyscraper Center_files/1281-Grenfell-House-fire-thumbnail.jpg" border="0">
+
+					</div>
+
+		<div class="span7">
+			
+			<b>
+							CTBUH Releases Initial Statement on Grenfell House Fire in London						</b>
+
+						<br>
+
+			<span class="muted">
+			<small>
+			
+							14 Jun 2017, London			
+			–
+
+			CTBUH-Related News
+			Report
+						</small>
+			</span>
+
+			<br>
+
+			
+			CTBUH Fellow Simon Lay authored an official statement on behalf of the CTBUH regarding the devastating Grenfell House fire that occurred in London on June 14.		</div>
+	</div>
+ 			
+			
+								
+							<div class="row inner-section">
+		<div class="span1">
+			
+			<img class="img-rounded" src="./The Address - The Skyscraper Center_files/877-IMG_0297.jpg" border="0">
+
+					</div>
+
+		<div class="span7">
+			
+			<b>
+							Warm Weather Spaces Walking Tours 2015						</b>
+
+						<br>
+
+			<span class="muted">
+			<small>
+			
+							17 Sep 2015			
+			–
+
+			Tour
+			Report
+						</small>
+			</span>
+
+			<br>
+
+			
+			The CTBUH Urban Habitat / Urban Design Committee organized guided walking tours of 16 cities around the globe, focusing on urban habitats around tall buildings.		</div>
+	</div>
+ 			
+			
+								
+							<div class="row inner-section">
+		<div class="span1">
+							<a href="http://www.ctbuh.org/LinkClick.aspx?link=1354&amp;language=en-US" target="_blank">
+			
+			<img class="img-rounded" src="./The Address - The Skyscraper Center_files/Shanghai.jpg" border="0">
+
+							</a>
+					</div>
+
+		<div class="span7">
+							<a href="http://www.ctbuh.org/LinkClick.aspx?link=1354&amp;language=en-US" target="_blank">
+			
+			<b>
+							CTBUH Releases Tallest Buildings Completed in 2008						</b>
+
+							</a>
+						<br>
+
+			<span class="muted">
+			<small>
+			
+							Dec 2008			
+			–
+
+			CTBUH Journal Paper
+			
+						</small>
+			</span>
+
+			<br>
+
+			
+			Against the backdrop of global economic crisis, 2008 witnessed the most successful year of skyscraper construction to date, with more skyscrapers constructed globally within a single year than ever…		</div>
+	</div>
+ 			
+			
+							</div> <!-- /tab-pane -->
+						
+	</div> <!-- /tab-content -->
+</div> <!-- /tabbable -->					</div>
+				</div>
+						</div>
+
+
+
+	
+	<div class="span6 brick">
+		<h4>Research Papers</h4>
+
+									<p>
+	<a href="http://global.ctbuh.org/paper/3649" target="_blank"><b>
+	How to Protect High-Rise Egress Routes?	</b></a>
+	<br>
+
+	<span class="muted">
+		
+		Apr 2018 – 
+
+		
+		CTBUH Journal, 2018 Issue II	</span>
+</p>
+																<p>
+	<a href="http://global.ctbuh.org/paper/3665" target="_blank"><b>
+	Debating Tall: Do Cladding Fire Codes &amp; Tests Need Changing?	</b></a>
+	<br>
+
+	<span class="muted">
+		
+		28 Apr 2016 – 
+
+		
+		CTBUH Journal, 2016 Issue II	</span>
+</p>
+																<p>
+	<a href="http://global.ctbuh.org/paper/38" target="_blank"><b>
+	Tallest Buildings Completed in 2008	</b></a>
+	<br>
+
+	<span class="muted">
+		
+		Dec 2008 – 
+
+		
+		CTBUH Journal, 2009 Issue I	</span>
+</p>
+									
+			</div><div style="height: 1px; clear: both">&nbsp;</div>
+
+
+
+</div>
+<!-- /modules -->
+
+<div class="row section-container">
+	<div class="span12">
+		<br>
+		To submit more information or donate images for this project, please use our <a href="http://www.skyscrapercenter.com/portal/submit?building_id=468">submission portal</a>.<br><br>
+	</div>
+</div>
+
+	<script type="text/javascript" src="./The Address - The Skyscraper Center_files/common.buildings.js.download"></script>	
+
+
+</div> <!-- /container -->
+
+<div id="footer" class="container">
+    <div class="row">
+        <!--<div class='span2 pull-left'>
+            <form class='form-inline' method='get' action='http://www.ctbuh.org/AboutCTBUH/SearchCTBUHWebsite/tabid/37/language/en-US/Default.aspx' target='_blank'>
+                <input class='input-medium' type='text' name='q' placeholder="Search CTBUH Websites" />
+            </form>
+        </div>-->
+
+        <div class="span6 pull-left footer-text">
+            &nbsp;
+            <a href="http://www.ctbuh.org/" target="_blank">CTBUH Home</a> 
+
+            • <a href="http://www.skyscrapercenter.com/about">About the Database</a>
+            • <a href="mailto:skyscrapercenter@ctbuh.org">Contact Us</a>
+        </div>
+
+        <div class="span4 pull-right text-right footer-text">© 2019 <a href="http://www.ctbuh.org/" target="_blank">Council on Tall Buildings and Urban Habitat</a></div>
+    </div>
+</div>
+
+<div id="print-message" class="container">
+    <div class="row">
+        <div class="span12">
+            <p>Please enable printing background colors and images to preserve the full website experience when printing.</p>
+
+            <p>In Internet Explorer, click Print - Page setup and check the <i>Print Background Colors and Images</i> box.<br>
+            In Google Chrome, click Print then check the <i>Background colors and images</i> box under the Options section.<br>
+            In Mozilla Firefox, click File - Page Setup then check the <i>Print Background (colors &amp; images)</i> box.</p>
+        </div>
+    </div>
+</div>
+
+
+<script src="./The Address - The Skyscraper Center_files/bootstrap.min.js.download"></script>
+<script src="./The Address - The Skyscraper Center_files/common.js.download"></script>
+
+<script src="./The Address - The Skyscraper Center_files/leaflet.js.download"></script>
+<script src="./The Address - The Skyscraper Center_files/leaflet.markercluster.js.download"></script>
+
+<script src="./The Address - The Skyscraper Center_files/trip.min.js.download"></script>
+<script src="./The Address - The Skyscraper Center_files/jquery.typeahead.min.js.download"></script>
+<script src="./The Address - The Skyscraper Center_files/jquery.colorbox-min.js.download"></script>
+<script src="./The Address - The Skyscraper Center_files/jquery.dataTables.min.js.download"></script>
+<script src="./The Address - The Skyscraper Center_files/jquery.dataTables.tableTools.min.js.download"></script>
+<script src="./The Address - The Skyscraper Center_files/jquery.nanoscroller.min.js.download"></script>
+<script src="./The Address - The Skyscraper Center_files/jquery.maphilight.min.js.download"></script>
+<script src="./The Address - The Skyscraper Center_files/jquery.trunk8.min.js.download"></script>
+<script src="./The Address - The Skyscraper Center_files/jquery.qtip.min.js.download"></script>
+
+<script type="text/javascript">
+  var _paq = _paq || [];
+  _paq.push(['trackPageView']);
+  _paq.push(['enableLinkTracking']);
+  (function() {
+    var u="//analytics.ctbuh.org/";
+    _paq.push(['setTrackerUrl', u+'piwik.php']);
+    _paq.push(['setSiteId', 1]);
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+    g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<noscript><p><img src="//analytics.ctbuh.org/piwik.php?idsite=1" style="border:0;" alt="" /></p></noscript>
+
+
+<div id="cboxOverlay" style="display: none;"></div><div id="colorbox" class="" role="dialog" tabindex="-1" style="display: none;"><div id="cboxWrapper"><div><div id="cboxTopLeft" style="float: left;"></div><div id="cboxTopCenter" style="float: left;"></div><div id="cboxTopRight" style="float: left;"></div></div><div style="clear: left;"><div id="cboxMiddleLeft" style="float: left;"></div><div id="cboxContent" style="float: left;"><div id="cboxTitle" style="float: left;"></div><div id="cboxCurrent" style="float: left;"></div><button type="button" id="cboxPrevious"></button><button type="button" id="cboxNext"></button><button id="cboxSlideshow"></button><div id="cboxLoadingOverlay" style="float: left;"></div><div id="cboxLoadingGraphic" style="float: left;"></div></div><div id="cboxMiddleRight" style="float: left;"></div></div><div style="clear: left;"><div id="cboxBottomLeft" style="float: left;"></div><div id="cboxBottomCenter" style="float: left;"></div><div id="cboxBottomRight" style="float: left;"></div></div></div><div style="position: absolute; width: 9999px; visibility: hidden; display: none;"></div></div></body></html>
